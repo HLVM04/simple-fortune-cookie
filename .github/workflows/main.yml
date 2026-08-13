@@ -40,8 +40,8 @@ jobs:
               #${{ github.ref == 'refs/heads/main' }}
               context: backend
               tags: |
-                ghcr.io/${{ github.repository }}/backend:latest
-                ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+                ghcr.io/hlvm04/simple-fortune-cookie/backend:latest
+                ghcr.io/hlvm04/simple-fortune-cookie/backend:${{ github.sha }}
           - name: Build frontend
             uses: docker/build-push-action@v7
             with:
@@ -49,5 +49,5 @@ jobs:
               #push: ${{ github.ref == 'refs/heads/main' }}
               context: frontend
               tags: |
-                ghcr.io/${{ github.repository }}/frontend:latest
-                ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+                ghcr.io/hlvm04/simple-fortune-cookie/frontend:latest
+                ghcr.io/hlvm04/simple-fortune-cookie/frontend:${{ github.sha }}

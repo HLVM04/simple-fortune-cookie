@@ -20,7 +20,7 @@ spec:
         name: backend
         env:
         - name: REDIS_DNS
-          value: redis
+          value: localhost
         resources: {}
       - image: redis:8.10-alpine
         name: redis

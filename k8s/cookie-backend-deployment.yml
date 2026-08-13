@@ -16,7 +16,7 @@ spec:
         app: cookie-backend
     spec:
       containers:
-      - image: ghcr.io/hlvm04/simple-fortune-cookie/backend:latest
+      - image: ghcr.io/hlvm04/simple-fortune-cookie/backend:${IMAGE-TAG:latest}
         name: backend
         resources: {}
 status: {}

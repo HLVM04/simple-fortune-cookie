@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Clone down repository
         uses: actions/checkout@v7
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
       - parallel:
           - name: Build backend
             uses: docker/build-push-action@v7
@@ -20,7 +22,7 @@ jobs:
               context: frontend
 
   Test:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     container: golang:1.26-alpine
     steps:
       - name: Clone down repository

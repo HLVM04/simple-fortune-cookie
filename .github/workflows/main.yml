@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.26-alpine
     permissions:
+      contents: read
       packages: write
     steps:
       - name: Login to GitHub Container Registry
@@ -34,8 +35,10 @@ jobs:
             with:
               push: ${{ github.ref == 'refs/heads/main' }}
               context: backend
+              tags: backend:latest
           - name: Build frontend
             uses: docker/build-push-action@v7
             with:
               push: ${{ github.ref == 'refs/heads/main' }}
               context: frontend
+              tags: frontend:latest

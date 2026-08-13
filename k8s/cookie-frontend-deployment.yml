@@ -16,7 +16,7 @@ spec:
         app: cookie-frontend
     spec:
       containers:
-      - image: ghcr.io/hlvm04/simple-fortune-cookie/frontend:${IMAGE_TAG:-latest}
+      - image: ghcr.io/hlvm04/simple-fortune-cookie/frontend:latest
         name: frontend
         resources: {}
         env:

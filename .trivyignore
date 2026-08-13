@@ -1,0 +1,11 @@
+# Dockerfiles run as root
+DS-0002
+
+# k8s: securityContext.readOnlyRootFilesystem not set
+KSV-0014
+
+# k8s: containers/deployments use the default security context
+KSV-0118
+
+# gopkg.in/yaml.v2 v2.2.2
+CVE-2022-3064

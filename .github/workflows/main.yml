@@ -51,7 +51,7 @@ jobs:
                 ghcr.io/hlvm04/simple-fortune-cookie/frontend:${{ github.sha }}
 
   Deploy:
-    #if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: [Build, Test]
     steps:

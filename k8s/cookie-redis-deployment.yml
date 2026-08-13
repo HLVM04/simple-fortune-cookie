@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: cookie-redis
+  name: cookie-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cookie-redis
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cookie-redis
+    spec:
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
+      containers:
+        - image: redis:5.0-alpine
+          name: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data

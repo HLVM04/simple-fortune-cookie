@@ -9,12 +9,6 @@ jobs:
         uses: actions/checkout@v7
       - name: Run frontend tests
         run: cd frontend && go test
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
   Build:
     needs: [Test]
@@ -36,6 +30,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Clone down repository
         uses: actions/checkout@v7
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - parallel:

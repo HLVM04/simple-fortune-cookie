@@ -2,7 +2,7 @@ name: main
 on: push
 jobs:
   Build:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     container: golang:1.26-alpine
     steps:
       - name: Clone down repository

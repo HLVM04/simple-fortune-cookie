@@ -50,10 +50,50 @@ jobs:
                 ghcr.io/hlvm04/simple-fortune-cookie/frontend:latest
                 ghcr.io/hlvm04/simple-fortune-cookie/frontend:${{ github.sha }}
 
+  FunctionalTest:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: [Build]
+    steps:
+      - name: Clone down repository
+        uses: actions/checkout@v7
+      - name: Set up Kubeconfig
+        uses: azure/setup-kubectl@v4
+      - name: Deploy and test temporary version
+        env:
+          KUBECONFIG_B64: ${{ secrets.KUBECONFIG }}
+          KUBE_NAMESPACE: student-67
+        run: |
+          set -eu
+          export KUBECONFIG="$RUNNER_TEMP/kubeconfig"
+          printf '%s' "$KUBECONFIG_B64" | base64 --decode > "$KUBECONFIG"
+          suffix="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test_backend="cookie-backend-test-${suffix}"
+          test_frontend="cookie-frontend-test-${suffix}"
+          manifests=$(mktemp -d)
+          cp k8s/*.yml "$manifests"
+          sed -i \
+            -e "s|cookie-backend|${test_backend}|g" \
+            -e "s|cookie-frontend|${test_frontend}|g" \
+            -e "s|:latest|:${GITHUB_SHA}|g" \
+            "$manifests"/*.yml
+
+          port_forward_pid=
+          trap 'kill "$port_forward_pid" 2>/dev/null || true; kubectl -n "$KUBE_NAMESPACE" delete -f "$manifests" --ignore-not-found --wait=false || true' EXIT
+          
+          kubectl -n "$KUBE_NAMESPACE" apply -f "$manifests"
+          kubectl -n "$KUBE_NAMESPACE" \
+            rollout status "deployment/${test_frontend}" --timeout=180s
+
+          kubectl -n "$KUBE_NAMESPACE" \
+            port-forward "service/${test_frontend}" 8080:8080 >/dev/null 2>&1 &
+          port_forward_pid=$!
+          ./scripts/smoke-test.sh http://127.0.0.1:8080
+
   Deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    needs: [Build, Test]
+    needs: [Build, Test, FunctionalTest]
     steps:
       - name: Clone down repository
         uses: actions/checkout@v7
@@ -65,4 +105,4 @@ jobs:
           sed -i "s|:latest|:${{ github.sha }}|" \
             k8s/cookie-backend-deployment.yml \
             k8s/cookie-frontend-deployment.yml
-          kubectl --kubeconfig kubeconfig apply -f k8s
+          kubectl --kubeconfig kubeconfig --namespace student-67 apply -f k8s

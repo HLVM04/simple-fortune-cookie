@@ -28,4 +28,4 @@ jobs:
       - name: Clone down repository
         uses: actions/checkout@v7
       - name: Run frontend tests
-        run: go test frontend
+        run: cd frontend && go test

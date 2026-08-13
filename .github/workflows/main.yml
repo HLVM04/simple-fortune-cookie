@@ -61,5 +61,5 @@ jobs:
         uses: azure/setup-kubectl@v4
       - name: Deploy to Kubernetes
         env: 
-          IMAGE-TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig && kubectl --kubeconfig kubeconfig apply -f k8s

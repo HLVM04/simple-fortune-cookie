@@ -5,4 +5,7 @@ WORKDIR /backend
 
 RUN go build -o backend .
 
-CMD ["./backend"]
+FROM scratch
+COPY --from=0 /backend/backend /backend
+
+CMD ["/backend"]

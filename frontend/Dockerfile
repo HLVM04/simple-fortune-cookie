@@ -5,4 +5,6 @@ WORKDIR /frontend
 
 RUN go build -o frontend .
 
-CMD ["./frontend"]
+FROM scratch
+COPY --from=0 /frontend/frontend /frontend
+CMD ["/frontend"]

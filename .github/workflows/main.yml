@@ -34,7 +34,7 @@ jobs:
           version: 'latest'
 
       - name: GoSec Scan
-        uses: securego/gosec-action@v2
+        uses: securego/gosec@v2
         with:
           args: '-no-fail -fmt sarif -out results.sarif ./...'
 

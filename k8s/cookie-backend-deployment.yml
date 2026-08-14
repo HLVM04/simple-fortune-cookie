@@ -22,3 +22,7 @@ spec:
         - name: REDIS_DNS
           value: cookie-redis
         resources: {}
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532

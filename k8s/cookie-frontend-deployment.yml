@@ -22,3 +22,7 @@ spec:
         env:
         - name: BACKEND_DNS
           value: cookie-backend
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532

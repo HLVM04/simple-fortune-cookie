@@ -31,3 +31,7 @@ spec:
           volumeMounts:
             - name: redis-data
               mountPath: /data
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532

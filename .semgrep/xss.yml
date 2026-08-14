@@ -1,0 +1,34 @@
+rules:
+  - id: go-unescaped-write-to-responsewriter
+    patterns:
+      - pattern-either:
+          - pattern: fmt.Fprint($W, $DATA)
+          - pattern: fmt.Fprintf($W, ...)
+          - pattern: $W.Write($DATA)
+          - pattern: io.WriteString($W, $DATA)
+      - pattern-not: fmt.Fprint($W, "...")
+      - pattern-not: io.WriteString($W, "...")
+      - metavariable-type:
+          metavariable: $W
+          type: http.ResponseWriter
+    message: >-
+      Untrusted data is written directly to an http.ResponseWriter with no HTML
+      escaping. If any client renders this response as markup (e.g. assigning it
+      to .innerHTML), this is a stored/reflected XSS sink. Render through
+      html/template, or escape with template.HTMLEscapeString.
+    languages: [go]
+    severity: ERROR
+
+  - id: go-json-built-with-sprintf
+    patterns:
+      - pattern: fmt.Sprintf($FMT, ...)
+      - metavariable-regex:
+          metavariable: $FMT
+          regex: (?s).*\{.*".*:.*%s.*
+    message: >-
+      JSON document built by string formatting with an unescaped %s. Input
+      containing a double quote or backslash breaks out of the JSON string and
+      injects arbitrary fields into the document. Build a struct or map and use
+      encoding/json.Marshal instead.
+    languages: [go]
+    severity: ERROR

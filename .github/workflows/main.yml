@@ -33,10 +33,18 @@ jobs:
           exit-code: '1'
           version: 'latest'
 
-      - name: GoSec Scan
-        uses: securego/gosec@v2.28.0
-        with:
-          args: '-no-fail -fmt sarif -out results.sarif ./...'
+      - name: Install Semgrep
+        run: python3 -m pip install --disable-pip-version-check semgrep
+
+      - name: Semgrep Scan
+        run: |
+          semgrep scan \
+            --config .semgrep/ \
+            --config r/javascript.browser.security.insecure-innerhtml.insecure-innerhtml \
+            --metrics off \
+            --sarif --output semgrep.sarif \
+            --error \
+            frontend/ backend/
 
       - name: Upload Trivy Results
         if: always()
@@ -45,12 +53,12 @@ jobs:
           sarif_file: trivy.sarif
           category: 'Trivy'
 
-      - name: Upload GoSec Results
+      - name: Upload Semgrep Results
         if: always()
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: results.sarif
-          category: 'GoSec'
+          sarif_file: semgrep.sarif
+          category: 'Semgrep'
 
   CodeQL:
     runs-on: ubuntu-latest
@@ -69,7 +77,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: go
+          languages: "go, javascript-typescript"
           build-mode: manual
 
       - name: Build Modules

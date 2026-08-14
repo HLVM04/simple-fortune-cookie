@@ -10,7 +10,7 @@ jobs:
       - name: Run frontend tests
         run: cd frontend && go test
 
-  Security:
+  Trivy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,7 +40,7 @@ jobs:
           sarif_file: trivy.sarif
           category: 'Trivy'
 
-  CodeQL:
+  Semgrep:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -49,27 +49,28 @@ jobs:
       - name: Clone down repository
         uses: actions/checkout@v7
 
-      - name: Setup GoLang
-        uses: actions/setup-go@v7
-        with:
-          go-version: "1.26"
+      - name: Install Semgrep
+        run: python3 -m pip install --disable-pip-version-check semgrep
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: go
-          build-mode: manual
-
-      - name: Build Modules
+      - name: Semgrep Scan
         run: |
-          (cd backend && go build ./...)
-          (cd frontend && go build ./...)
+          semgrep scan \
+            --config .semgrep/ \
+            --config r/javascript.browser.security.insecure-innerhtml.insecure-innerhtml \
+            --metrics off \
+            --sarif --output semgrep.sarif \
+            --error \
+            frontend/ backend/
 
-      - name: CodeQL Analyze
-        uses: github/codeql-action/analyze@v4
+      - name: Upload Semgrep Results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep.sarif
+          category: 'Semgrep'
 
   Build:
-    needs: [Test, Security, CodeQL]
+    needs: [Test, Trivy, Semgrep]
     runs-on: ubuntu-latest
     permissions:
       contents: read

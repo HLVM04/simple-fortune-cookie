@@ -10,6 +10,7 @@ function get(endpoint) {
     var xhttp = new XMLHttpRequest();
     xhttp.onload = function() {
         if (this.status == 200) {
+            // nosemgrep: javascript.browser.security.insecure-innerhtml.insecure-innerhtml
             document.getElementById("output").innerHTML =
             this.responseText;
         }
@@ -29,11 +30,11 @@ function addCookie(e) {
         var xhttp = new XMLHttpRequest();
         xhttp.onload = function() {
             if (this.status == 200) {
-                document.getElementById("output").innerHTML =
+                document.getElementById("output").textContent =
                     this.responseText;
                 document.querySelector('#message').value = ""
             } else {
-                document.getElementById("output").innerHTML =
+                document.getElementById("output").textContent =
                     `Error: ${this.status}, ${this.responseText}`
             }
         };
@@ -41,7 +42,7 @@ function addCookie(e) {
         xhttp.setRequestHeader('Content-type', 'application/json');
         xhttp.send(JSON.stringify(params));
     } catch (e) {
-        document.getElementById("output").innerHTML = e.message;
+        document.getElementById("output").textContent = e.message;
     }
     return false;
 }

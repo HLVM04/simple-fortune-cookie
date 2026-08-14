@@ -15,9 +15,15 @@ spec:
       labels:
         app: cookie-backend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
       containers:
       - image: ghcr.io/hlvm04/simple-fortune-cookie/backend:latest
         name: backend
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         env:
         - name: REDIS_DNS
           value: cookie-redis

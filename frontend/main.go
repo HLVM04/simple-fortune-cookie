@@ -39,23 +39,23 @@ func main() {
     http.HandleFunc("/api/random", func (w http.ResponseWriter, r *http.Request) {
         resp, err := myClient.Get(fmt.Sprintf("http://%s:%s/fortunes/random", BACKEND_DNS, BACKEND_PORT))
         if err != nil {
-            log.Fatalln(err)
-            fmt.Fprint(w, err)
+            log.Println(err)
+            http.Error(w, "backend unavailable", http.StatusBadGateway)
             return
         }
 
         f := new(fortune)
         json.NewDecoder(resp.Body).Decode(f)
 
-        fmt.Fprint(w, f.Message)
+        template.HTMLEscape(w, []byte(f.Message))
         return
     })
 
     http.HandleFunc("/api/all", func (w http.ResponseWriter, r *http.Request) {
         resp, err := myClient.Get(fmt.Sprintf("http://%s:%s/fortunes", BACKEND_DNS, BACKEND_PORT))
         if err != nil {
-            log.Fatalln(err)
-            fmt.Fprint(w, err)
+            log.Println(err)
+            http.Error(w, "backend unavailable", http.StatusBadGateway)
             return
         }
 
@@ -65,8 +65,8 @@ func main() {
         tmpl, err := template.ParseFiles("./templates/fortunes.html")
 
         if err != nil {
-            log.Fatalln(err)
-            fmt.Fprint(w, err)
+            log.Println(err)
+            http.Error(w, "internal server error", http.StatusInternalServerError)
             return
         }
 
@@ -85,12 +85,12 @@ func main() {
         json.NewDecoder(r.Body).Decode(f)
 
         var postUrl = fmt.Sprintf("http://%s:%s/fortunes", BACKEND_DNS, BACKEND_PORT)
-        var jsonStr = []byte(fmt.Sprintf(`{"id": "%d", "message": "%s"}`, rand.Intn(10000), f.Message))
+        jsonStr, _ := json.Marshal(fortune{ID: fmt.Sprint(rand.Intn(10000)), Message: f.Message})
 
         _, err := myClient.Post(postUrl, "application/json", bytes.NewBuffer(jsonStr))
         if err != nil {
-            log.Fatalln(err)
-            fmt.Fprint(w, err)
+            log.Println(err)
+            http.Error(w, "backend unavailable", http.StatusBadGateway)
             return
         }
 

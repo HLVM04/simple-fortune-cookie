@@ -17,6 +17,11 @@ spec:
       labels:
         app: cookie-redis
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
       volumes:
         - name: redis-data
           persistentVolumeClaim:
@@ -24,6 +29,9 @@ spec:
       containers:
         - image: redis:5.0-alpine
           name: redis
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 6379
               name: redis
@@ -31,3 +39,4 @@ spec:
           volumeMounts:
             - name: redis-data
               mountPath: /data
+          

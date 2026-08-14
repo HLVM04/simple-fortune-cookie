@@ -47,7 +47,7 @@ func main() {
         f := new(fortune)
         json.NewDecoder(resp.Body).Decode(f)
 
-        fmt.Fprint(w, f.Message)
+        template.HTMLEscape(w, []byte(f.Message))
         return
     })
 
@@ -85,7 +85,7 @@ func main() {
         json.NewDecoder(r.Body).Decode(f)
 
         var postUrl = fmt.Sprintf("http://%s:%s/fortunes", BACKEND_DNS, BACKEND_PORT)
-        var jsonStr = []byte(fmt.Sprintf(`{"id": "%d", "message": "%s"}`, rand.Intn(10000), f.Message))
+        jsonStr, _ := json.Marshal(fortune{ID: fmt.Sprint(rand.Intn(10000)), Message: f.Message})
 
         _, err := myClient.Post(postUrl, "application/json", bytes.NewBuffer(jsonStr))
         if err != nil {

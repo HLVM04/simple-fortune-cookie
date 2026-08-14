@@ -1,6 +1,3 @@
-# Dockerfiles run as root
-DS-0002
-
 # k8s: securityContext.readOnlyRootFilesystem not set
 KSV-0014
 

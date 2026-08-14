@@ -1,10 +1,12 @@
-FROM golang:1.26-alpine
+FROM golang:1.26-alpine AS builder
 
 COPY . /frontend
 WORKDIR /frontend
 
-RUN go build -o frontend .
+RUN GOCACHE=/tmp/go-cache CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o frontend .
 
 FROM scratch
-COPY --from=0 /frontend/frontend /frontend
+USER 65532:65532
+COPY --from=builder /frontend/frontend /frontend
+
 CMD ["/frontend"]

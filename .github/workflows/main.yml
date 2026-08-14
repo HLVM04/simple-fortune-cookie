@@ -10,7 +10,7 @@ jobs:
       - name: Run frontend tests
         run: cd frontend && go test
 
-  Security:
+  Trivy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,6 +33,22 @@ jobs:
           exit-code: '1'
           version: 'latest'
 
+      - name: Upload Trivy Results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy.sarif
+          category: 'Trivy'
+
+  Semgrep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Clone down repository
+        uses: actions/checkout@v7
+
       - name: Install Semgrep
         run: python3 -m pip install --disable-pip-version-check semgrep
 
@@ -46,13 +62,6 @@ jobs:
             --error \
             frontend/ backend/
 
-      - name: Upload Trivy Results
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy.sarif
-          category: 'Trivy'
-
       - name: Upload Semgrep Results
         if: always()
         uses: github/codeql-action/upload-sarif@v4
@@ -61,7 +70,7 @@ jobs:
           category: 'Semgrep'
 
   Build:
-    needs: [Test, Security]
+    needs: [Test, Trivy, Semgrep]
     runs-on: ubuntu-latest
     permissions:
       contents: read

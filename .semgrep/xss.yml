@@ -8,6 +8,7 @@ rules:
           - pattern: io.WriteString($W, $DATA)
       - pattern-not: fmt.Fprint($W, "...")
       - pattern-not: io.WriteString($W, "...")
+      - pattern-not: $W.Write([]byte("..."))
       - metavariable-type:
           metavariable: $W
           type: http.ResponseWriter

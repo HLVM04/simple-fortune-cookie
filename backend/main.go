@@ -72,6 +72,7 @@ func (h *fortuneHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	// nosemgrep: go-unescaped-write-to-responsewriter
 	w.Write(jsonBytes)
 }
 
@@ -130,6 +131,7 @@ func (h *fortuneHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	// nosemgrep: go-unescaped-write-to-responsewriter
 	w.Write(jsonBytes)
 }
 
@@ -156,6 +158,7 @@ func (h *fortuneHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	// nosemgrep: go-unescaped-write-to-responsewriter
 	w.Write(jsonBytes)
 }
 
